@@ -1,9 +1,11 @@
 import sqlite3
+import os
 
 class Store:
     def __init__(self, name, db_file="stores.db"):
         self.name = name
-        self.db_file = db_file
+        # Ensure the database path is correct
+        self.db_file = os.path.join(os.path.dirname(__file__), db_file)
         self.conn = sqlite3.connect(self.db_file, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self._create_table()
@@ -34,16 +36,12 @@ class Store:
         )
         self.conn.commit()
 
-    def sort_items(self, items, aisle_input_func=None):
+    def sort_items(self, items):
         sorted_list = []
         for item in items:
             aisle = self.get_aisle(item)
             if aisle is None:
-                if aisle_input_func:
-                    aisle = aisle_input_func(item)
-                else:
-                    aisle = 999
-                self.add_item(item, aisle)
+                aisle = 999  # placeholder if not yet known
             sorted_list.append((item, aisle))
         sorted_list.sort(key=lambda x: x[1])
         return sorted_list

@@ -6,7 +6,7 @@ st.title("🛒 Shoptimal Grocery Sorter")
 
 store_names = ["Tesco", "Sainsbury's"]
 
-# Initialize stores in session state
+# Initialize Store objects in session state
 if "stores" not in st.session_state:
     st.session_state.stores = {name: Store(name) for name in store_names}
 
@@ -16,30 +16,34 @@ store = st.session_state.stores[store_name]
 
 items = [i.strip() for i in items_input.split(",") if i.strip()]
 
-# Track unknown items and their input aisles
+# Session state to hold user input for unknown items
 if "unknown_aisles" not in st.session_state:
     st.session_state.unknown_aisles = {}
 
-# Step 1: Detect unknown items and display input fields
+# Detect unknown items and show number_input fields
 unknown_items = [i for i in items if store.get_aisle(i) is None]
 for item in unknown_items:
     if item not in st.session_state.unknown_aisles:
         st.session_state.unknown_aisles[item] = 1
     st.session_state.unknown_aisles[item] = st.number_input(
-        f"Enter aisle for '{item}'", min_value=1, step=1, key=f"{store_name}_{item}"
+        f"Enter aisle for '{item}'",
+        min_value=1,
+        step=1,
+        key=f"{store_name}_{item}"
     )
 
-# Step 2: Update SQLite and display sorted list
+# Update database only when user clicks Sort
 if st.button("Sort"):
-    # Save unknown items to SQLite
+    # Save all unknown items to SQLite
     for item, aisle in st.session_state.unknown_aisles.items():
         store.add_item(item, aisle)
 
     # Clear session state for next input
     st.session_state.unknown_aisles = {}
 
-    # Sort and display items
+    # Sort items using database values
     sorted_items = store.sort_items(items)
+
     st.subheader("Sorted Grocery List")
     for item, aisle in sorted_items:
         st.write(f"{item} (Aisle {aisle})")
