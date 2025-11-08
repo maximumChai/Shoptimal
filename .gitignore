@@ -209,7 +209,9 @@ __marimo__/
 
 # Max added files
 .csv
-.txt
 .env
 .venv
 *venv
+*.xml
+*.iml
+*.idea

@@ -36,6 +36,7 @@ class Store:
 
 # Example: using the Store
 tesco = Store("Tesco", "tesco_aisles.json")
+sainsburys = Store("Sainsburys", "sainsburys_aisles.json")
 
 items = ["milk", "apples", "bread", "pasta", "tea"]
 sorted_items = tesco.sort_items(items)
